@@ -54,15 +54,36 @@ export async function POST(request) {
       // Check if user needs 2FA setup
       // For now, we'll assume all users need 2FA setup since we don't have backend endpoints
       // In the future, you can implement backend logic to check if user has 2FA enabled
-      const needs2FASetup = true; // This will be determined by the frontend based on session storage
+      const needs2FASetup = true; // This will be determined by the frontend based on cookies
       
-      return NextResponse.json({
+      // Create response with success message
+      const responseData = {
         success: true,
-        user: userData,
-        token: data.token,
         needs2FASetup,
         message: 'Login successful. Please setup 2FA.'
+      };
+
+      // Create NextResponse with cookies
+      const nextResponse = NextResponse.json(responseData);
+
+      // Set authentication cookies
+      nextResponse.cookies.set('authToken', data.token, {
+        httpOnly: false, // Allow client-side access
+        secure: process.env.NODE_ENV === 'production', // Secure in production
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60, // 7 days
+        path: '/'
       });
+
+      nextResponse.cookies.set('userData', JSON.stringify(userData), {
+        httpOnly: false, // Allow client-side access
+        secure: process.env.NODE_ENV === 'production', // Secure in production
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60, // 7 days
+        path: '/'
+      });
+
+      return nextResponse;
     } else {
       console.error('Login failed with status:', response.status, 'data:', data);
       return NextResponse.json(

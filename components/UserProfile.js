@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { getCookie, clearAuthCookies } from "../utils/cookies";
 
 export default function UserProfile() {
   const [user, setUser] = useState(null);
@@ -8,16 +9,16 @@ export default function UserProfile() {
   const router = useRouter();
 
   useEffect(() => {
-    // Get user data from session storage
-    const userData = sessionStorage.getItem('user');
+    // Get user data from cookies
+    const userData = getCookie('userData');
     if (userData) {
       try {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
       } catch (error) {
         console.error("Error parsing user data:", error);
-        // Clear invalid session data
-        sessionStorage.clear();
+        // Clear invalid cookie data
+        clearAuthCookies();
       }
     }
   }, []);
@@ -27,8 +28,9 @@ export default function UserProfile() {
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
-      // Clear user session data but keep 2FA secret for convenience
-      sessionStorage.clear();
+      // Clear authentication cookies
+      clearAuthCookies();
+      
       // Optionally clear 2FA data too (uncomment the lines below if you want complete logout)
       // localStorage.removeItem('2faSecret');
       // localStorage.removeItem('2faEnabled');

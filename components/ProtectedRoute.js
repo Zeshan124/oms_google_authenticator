@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getCookie } from "../utils/cookies";
 
 export default function ProtectedRoute({ children, fallback = null }) {
   const router = useRouter();
@@ -8,12 +9,12 @@ export default function ProtectedRoute({ children, fallback = null }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check authentication status from storage
-    const user = sessionStorage.getItem('user');
-    const token = sessionStorage.getItem('token');
+    // Check authentication status from cookies
+    const userData = getCookie('userData');
+    const token = getCookie('authToken');
     const is2FAVerified = localStorage.getItem('2faVerified');
     
-    if (!user || !token) {
+    if (!userData || !token) {
       const currentUrl = window.location.pathname;
       router.push(`/auth/signin?callbackUrl=${encodeURIComponent(currentUrl)}`);
       return;

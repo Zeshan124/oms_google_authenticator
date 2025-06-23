@@ -52,22 +52,8 @@ const SignIn = () => {
       console.log('Login response data:', data);
       
       if (response.ok && data.success) {
-        // Validate user data before storing
-        if (!data.user || typeof data.user !== 'object') {
-          setError("Invalid user data received from server");
-          return;
-        }
-
-        // Store user data and token in session storage
-        try {
-          sessionStorage.setItem('user', JSON.stringify(data.user));
-          sessionStorage.setItem('token', data.token);
-          console.log('Session data stored successfully');
-        } catch (error) {
-          console.error("Error storing session data:", error);
-          setError("Failed to store session data");
-          return;
-        }
+        // Cookies are automatically set by the server response
+        console.log('Login successful, cookies set by server');
         
         // Check if user already has 2FA setup locally
         const existingSecret = localStorage.getItem('2faSecret');
@@ -86,8 +72,8 @@ const SignIn = () => {
         setError(data.error || "Login failed. Please try again.");
       }
     } catch (error) {
-      console.error("Login failed:", error);
-      setError("Login failed. Please try again.");
+      console.error("Login error:", error);
+      setError("An error occurred during login. Please try again.");
     } finally {
       setIsLoading(false);
     }

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import styles from "../../page.module.css";
+import { getCookie } from "../../../utils/cookies";
 
 const TwoFactorSetup = () => {
   const router = useRouter();
@@ -18,9 +19,9 @@ const TwoFactorSetup = () => {
   const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
   useEffect(() => {
-    // Get user data from session storage
-    const userData = sessionStorage.getItem('user');
-    const token = sessionStorage.getItem('token');
+    // Get user data from cookies
+    const userData = getCookie('userData');
+    const token = getCookie('authToken');
     
     if (!userData || !token) {
       router.push("/auth/signin");
@@ -34,8 +35,7 @@ const TwoFactorSetup = () => {
       generate2FASetup();
     } catch (error) {
       console.error("Error parsing user data:", error);
-      // Clear invalid session data and redirect to login
-      sessionStorage.clear();
+      // Clear invalid cookie data and redirect to login
       router.push("/auth/signin");
     }
   }, [router]);

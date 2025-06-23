@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../page.module.css";
+import { getCookie } from "../../utils/cookies";
 
 const Test2FA = () => {
   const router = useRouter();
@@ -12,11 +13,11 @@ const Test2FA = () => {
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    // Get user data from session storage
-    const userData = sessionStorage.getItem('user');
-    const token = sessionStorage.getItem('token');
+    // Get user data from cookies
+    const userData = getCookie('userData');
+    const authToken = getCookie('authToken');
     
-    if (!userData || !token) {
+    if (!userData || !authToken) {
       router.push("/auth/signin");
       return;
     }
@@ -26,8 +27,7 @@ const Test2FA = () => {
       setUser(parsedUser);
     } catch (error) {
       console.error("Error parsing user data:", error);
-      // Clear invalid session data and redirect to login
-      sessionStorage.clear();
+      // Clear invalid cookie data and redirect to login
       router.push("/auth/signin");
     }
   }, [router]);
