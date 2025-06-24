@@ -1,5 +1,5 @@
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 
 const handler = NextAuth({
   providers: [
@@ -10,11 +10,11 @@ const handler = NextAuth({
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: 'jwt',
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   pages: {
-    signIn: '/auth/signin',
+    signIn: "/auth/signin",
   },
   callbacks: {
     async jwt({ token, account, profile }) {

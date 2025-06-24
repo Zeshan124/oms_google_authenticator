@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import styles from "../../page.module.css";
+import { getCookie } from "../../../utils/cookies";
 
 const TwoFactorVerify = () => {
   const router = useRouter();
@@ -16,11 +17,11 @@ const TwoFactorVerify = () => {
 
   useEffect(() => {
     // Get user data and 2FA secret from storage
-    const userData = sessionStorage.getItem('user');
-    const token = sessionStorage.getItem('token');
+    const userData = getCookie('userData');
+    const authToken = getCookie('authToken');
     const storedSecret = localStorage.getItem('2faSecret');
     
-    if (!userData || !token) {
+    if (!userData || !authToken) {
       router.push("/auth/signin");
       return;
     }
@@ -38,8 +39,7 @@ const TwoFactorVerify = () => {
       }
     } catch (error) {
       console.error("Error parsing user data:", error);
-      // Clear invalid session data and redirect to login
-      sessionStorage.clear();
+      // Clear invalid cookie data and redirect to login
       router.push("/auth/signin");
     }
   }, [router, callbackUrl]);
