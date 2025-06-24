@@ -14,9 +14,9 @@ const Test2FA = () => {
 
   useEffect(() => {
     // Get user data from cookies
-    const userData = getCookie('userData');
-    const authToken = getCookie('authToken');
-    
+    const userData = getCookie("userData");
+    const authToken = getCookie("authToken");
+
     if (!userData || !authToken) {
       router.push("/auth/signin");
       return;
@@ -41,15 +41,15 @@ const Test2FA = () => {
     try {
       setIsLoading(true);
       setError("");
-      
+
       // Get the secret from localStorage
-      const secret = localStorage.getItem('2faSecret');
-      
+      const secret = localStorage.getItem("2faSecret");
+
       if (!secret) {
         setError("No 2FA secret found. Please setup 2FA first.");
         return;
       }
-      
+
       const response = await fetch("/api/auth/2fa/verify", {
         method: "POST",
         headers: {
@@ -59,7 +59,7 @@ const Test2FA = () => {
       });
 
       const data = await response.json();
-      
+
       if (response.ok && data.verified) {
         setSuccess("2FA verification successful!");
       } else {
@@ -90,24 +90,18 @@ const Test2FA = () => {
             <p>Test your two-factor authentication setup.</p>
           </div>
         </div>
-        
+
         <div className={styles.rightColumn}>
           <main className={styles.main}>
             <h1 className={styles.title}>Test 2FA Verification</h1>
-            <p className={styles.subtitle}>Enter a code from your Google Authenticator app</p>
-            
-            {error && (
-              <div className={styles.error}>
-                {error}
-              </div>
-            )}
-            
-            {success && (
-              <div className={styles.success}>
-                {success}
-              </div>
-            )}
-            
+            <p className={styles.subtitle}>
+              Enter a code from your Google Authenticator app
+            </p>
+
+            {error && <div className={styles.error}>{error}</div>}
+
+            {success && <div className={styles.success}>{success}</div>}
+
             <div className={styles.inputGroup}>
               <label htmlFor="token" className={styles.label}>
                 6-Digit Code
@@ -116,7 +110,9 @@ const Test2FA = () => {
                 type="text"
                 id="token"
                 value={token}
-                onChange={(e) => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                onChange={(e) =>
+                  setToken(e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
                 placeholder="000000"
                 className={styles.input}
                 maxLength={6}
@@ -124,21 +120,23 @@ const Test2FA = () => {
                 autoFocus
               />
             </div>
-            
-            <button 
-              className={`${styles.googleButton} ${isLoading ? styles.loading : ''}`}
+
+            <button
+              className={`${styles.googleButton} ${
+                isLoading ? styles.loading : ""
+              }`}
               onClick={test2FA}
               disabled={isLoading}
               type="button"
             >
-              {isLoading ? 'Testing...' : 'Test 2FA'}
+              {isLoading ? "Testing..." : "Test 2FA"}
             </button>
-            
+
             <div className={styles.divider}>
               <span>Navigation</span>
             </div>
-            
-            <button 
+
+            <button
               className={styles.switchLink}
               onClick={() => router.push("/dashboard")}
               type="button"
@@ -152,4 +150,4 @@ const Test2FA = () => {
   );
 };
 
-export default Test2FA; 
+export default Test2FA;

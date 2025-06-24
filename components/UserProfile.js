@@ -9,7 +9,6 @@ export default function UserProfile() {
   const router = useRouter();
 
   useEffect(() => {
-    // Get user data from cookies
     const userData = getCookie("userData");
     if (userData) {
       try {
@@ -17,7 +16,6 @@ export default function UserProfile() {
         setUser(parsedUser);
       } catch (error) {
         console.error("Error parsing user data:", error);
-        // Clear invalid cookie data
         clearAuthCookies();
       }
     }
@@ -35,12 +33,6 @@ export default function UserProfile() {
       localStorage.removeItem("2faSecret");
       localStorage.removeItem("2faEnabled");
       localStorage.removeItem("2faVerified");
-
-      // Optionally clear 2FA data too (uncomment the lines below if you want complete logout)
-      // localStorage.removeItem('2faSecret');
-      // localStorage.removeItem('2faEnabled');
-      // localStorage.removeItem('2faVerified');
-
       // Redirect to home page
       router.push("/");
     } catch (error) {
