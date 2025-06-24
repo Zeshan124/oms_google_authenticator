@@ -1,7 +1,6 @@
-import { NextResponse } from 'next/server';
-import axios from 'axios';
+import { NextResponse } from "next/server";
+import axios from "axios";
 
-// Create axios instance with base configuration
 const axiosInstance = axios.create({
   baseURL: "https://boms.qistbazaar.pk/api",
   headers: {
@@ -15,27 +14,23 @@ export async function POST(request) {
 
     if (!username || !password) {
       return NextResponse.json(
-        { error: 'Username and password are required' },
+        { error: "Username and password are required" },
         { status: 400 }
       );
     }
+    console.log("Attempting login for username:", username);
 
-    console.log('Attempting login for username:', username);
-
-    // Call the external login API using axios
-    const response = await axiosInstance.post('/user/login', {
+    const response = await axiosInstance.post("/user/login", {
       username,
       password,
     });
 
-    console.log('Login response status:', response.status);
-    console.log('Login response data:', response.data);
+    console.log("Login response status:", response.status);
+    console.log("Login response data:", response.data);
 
     const data = response.data;
 
     if (response.status === 200 && data) {
-      // The response doesn't have a nested 'user' object, the user data is directly in the response
-      // Create a user object from the response data
       const userData = {
         username: data.userName || data.username,
         email: data.email || data.userName || data.username,
@@ -48,77 +43,76 @@ export async function POST(request) {
         branchCode: data.branchCode,
         branchCodeAlias: data.branchCodeAlias,
         storeBranch: data.storeBranch,
-        ...data // Include all other properties
+        ...data, // Include all other properties
       };
 
-      // Check if user needs 2FA setup
-      // For now, we'll assume all users need 2FA setup since we don't have backend endpoints
-      // In the future, you can implement backend logic to check if user has 2FA enabled
-      const needs2FASetup = true; // This will be determined by the frontend based on cookies
-      
-      // Create response with success message
+      const needs2FASetup = true;
+
       const responseData = {
         success: true,
         needs2FASetup,
-        message: 'Login successful. Please setup 2FA.'
+        message: "Login successful. Please setup 2FA.",
       };
 
-      // Create NextResponse with cookies
       const nextResponse = NextResponse.json(responseData);
 
-      // Set authentication cookies
-      nextResponse.cookies.set('authToken', data.token, {
+      nextResponse.cookies.set("authToken", data.token, {
         httpOnly: false, // Allow client-side access
-        secure: process.env.NODE_ENV === 'production', // Secure in production
-        sameSite: 'strict',
+        secure: process.env.NODE_ENV === "production", // Secure in production
+        sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60, // 7 days
-        path: '/'
+        path: "/",
       });
 
-      nextResponse.cookies.set('userData', JSON.stringify(userData), {
-        httpOnly: false, // Allow client-side access
-        secure: process.env.NODE_ENV === 'production', // Secure in production
-        sameSite: 'strict',
+      nextResponse.cookies.set("userData", JSON.stringify(userData), {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
         maxAge: 7 * 24 * 60 * 60, // 7 days
-        path: '/'
+        path: "/",
       });
 
       return nextResponse;
     } else {
-      console.error('Login failed with status:', response.status, 'data:', data);
+      console.error(
+        "Login failed with status:",
+        response.status,
+        "data:",
+        data
+      );
       return NextResponse.json(
-        { error: data.message || data.error || 'Login failed' },
+        { error: data.message || data.error || "Login failed" },
         { status: response.status }
       );
     }
   } catch (error) {
-    console.error('Login error:', error);
-    
-    // Handle axios errors
+    console.error("Login error:", error);
+
     if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.error('Error response data:', error.response.data);
-      console.error('Error response status:', error.response.status);
-      
+      console.error("Error response data:", error.response.data);
+      console.error("Error response status:", error.response.status);
+
       return NextResponse.json(
-        { error: error.response.data?.message || error.response.data?.error || 'Login failed' },
+        {
+          error:
+            error.response.data?.message ||
+            error.response.data?.error ||
+            "Login failed",
+        },
         { status: error.response.status }
       );
     } else if (error.request) {
-      // The request was made but no response was received
-      console.error('No response received:', error.request);
+      console.error("No response received:", error.request);
       return NextResponse.json(
-        { error: 'No response from server. Please check your connection.' },
+        { error: "No response from server. Please check your connection." },
         { status: 503 }
       );
     } else {
-      // Something happened in setting up the request that triggered an Error
-      console.error('Error setting up request:', error.message);
+      console.error("Error setting up request:", error.message);
       return NextResponse.json(
-        { error: 'Failed to connect to server' },
+        { error: "Failed to connect to server" },
         { status: 500 }
       );
     }
   }
-} 
+}

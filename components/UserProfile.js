@@ -10,7 +10,7 @@ export default function UserProfile() {
 
   useEffect(() => {
     // Get user data from cookies
-    const userData = getCookie('userData');
+    const userData = getCookie("userData");
     if (userData) {
       try {
         const parsedUser = JSON.parse(userData);
@@ -30,12 +30,17 @@ export default function UserProfile() {
     try {
       // Clear authentication cookies
       clearAuthCookies();
-      
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("2faSecret");
+      localStorage.removeItem("2faEnabled");
+      localStorage.removeItem("2faVerified");
+
       // Optionally clear 2FA data too (uncomment the lines below if you want complete logout)
       // localStorage.removeItem('2faSecret');
       // localStorage.removeItem('2faEnabled');
       // localStorage.removeItem('2faVerified');
-      
+
       // Redirect to home page
       router.push("/");
     } catch (error) {
@@ -52,7 +57,7 @@ export default function UserProfile() {
           <p className="email">{user.email || user.username}</p>
           <div className="user-meta">
             <span className="provider">Custom Account</span>
-            {localStorage.getItem('2faEnabled') && (
+            {localStorage.getItem("2faEnabled") && (
               <span className="verified">✓ 2FA Enabled</span>
             )}
           </div>
@@ -60,10 +65,10 @@ export default function UserProfile() {
       </div>
       <button
         onClick={handleSignOut}
-        className={`sign-out-btn ${isSigningOut ? 'loading' : ''}`}
+        className={`sign-out-btn ${isSigningOut ? "loading" : ""}`}
         disabled={isSigningOut}
       >
-        {isSigningOut ? 'Signing out...' : 'Sign Out'}
+        {isSigningOut ? "Signing out..." : "Sign Out"}
       </button>
     </div>
   );
